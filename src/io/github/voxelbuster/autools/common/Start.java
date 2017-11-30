@@ -27,12 +27,17 @@ public class Start {
         new File("devices.txt").delete();
         Globals.runtime = Runtime.getRuntime();
         try {
-           InputStreamReader isr =  new InputStreamReader(Globals.runtime.exec("res\\adb\\adb.exe devices >> devices.txt").getInputStream());
+           InputStreamReader isr =  new InputStreamReader(Globals.runtime.exec("res\\adb\\adb.exe devices").getInputStream());
             BufferedReader br = new BufferedReader(isr);
 
             String line = null;
 
-            while ( (line = br.readLine()) != null)
+            while ((line = br.readLine()) != null)
+                if (line.startsWith("List")) {
+                    continue;
+                } else {
+                    Globals.devices.add(line);
+                }
                 System.out.println(line);
 
         } catch (IOException e) {
