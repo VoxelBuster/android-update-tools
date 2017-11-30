@@ -3,6 +3,7 @@ package io.github.voxelbuster.autools.api;
 import io.github.voxelbuster.autools.ui.ParentWindow;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Globals {
     public static final String WINDOW_TITLE = "Android Update Tools";
@@ -13,4 +14,6 @@ public class Globals {
     public static ParentWindow parentWindow;
 
     public static Runtime runtime;
+    
+    public static ArrayList<String> devices = new ArrayList<>();
 }
