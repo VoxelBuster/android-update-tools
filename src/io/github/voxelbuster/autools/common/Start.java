@@ -1,7 +1,9 @@
 package io.github.voxelbuster.autools.common;
 
 import io.github.voxelbuster.autools.api.Globals;
+import io.github.voxelbuster.autools.api.ResourceManager;
 import io.github.voxelbuster.autools.ui.ParentWindow;
+import jdk.nashorn.internal.scripts.JO;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -17,6 +19,8 @@ public class Start {
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
+        ResourceManager.init();
+
         Thread guiThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -27,22 +31,32 @@ public class Start {
         new File("devices.txt").delete();
         Globals.runtime = Runtime.getRuntime();
         try {
-           InputStreamReader isr =  new InputStreamReader(Globals.runtime.exec("res\\adb\\adb.exe devices").getInputStream());
+            InputStreamReader isr;
+            if (Globals.os_name.contains("Windows")) {
+                isr = new InputStreamReader(Globals.runtime.exec("res/adb/adb.exe devices").getInputStream());
+            } else {
+                isr = new InputStreamReader(Globals.runtime.exec("adb devices").getInputStream());
+            }
             BufferedReader br = new BufferedReader(isr);
 
             String line = null;
 
-            while ((line = br.readLine()) != null)
+            while ((line = br.readLine()) != null) {
                 if (line.startsWith("List")) {
                     continue;
                 } else {
                     Globals.devices.add(line);
                 }
                 System.out.println(line);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "ADB did not run properly on startup.\nPlease make sure it is in the adb folder or reinstall.", "ADB Error", JOptionPane.ERROR_MESSAGE);
+            if (Globals.os_name.contains("Windows")) {
+                JOptionPane.showMessageDialog(null, "ADB did not run properly on startup.\nPlease make sure it is in the adb folder or reinstall.", "ADB Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "ADB is not properly installed on your computer.\nPlease install it in order to continue.\nhttps://developer.android.com/studio/releases/platform-tools.html", "ADB Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }
