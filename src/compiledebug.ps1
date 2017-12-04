@@ -1,0 +1,1 @@
+E:/jdk8/bin/javac -sourcepath . -d ..\bin io\github\voxelbuster\autools\common\Start.java
