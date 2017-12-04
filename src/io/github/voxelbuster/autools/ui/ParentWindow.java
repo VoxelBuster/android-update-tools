@@ -2,8 +2,10 @@ package io.github.voxelbuster.autools.ui;
 
 import io.github.voxelbuster.autools.api.Globals;
 import io.github.voxelbuster.autools.api.ResourceManager;
+import se.vidstige.jadb.JadbException;
 
 import javax.swing.*;
+import java.io.IOException;
 
 public class ParentWindow extends JFrame {
 
@@ -40,7 +42,13 @@ public class ParentWindow extends JFrame {
                 revalidate();
                 break;
             case DEVICES:
-                setContentPane(new DevicesPane(this));
+                try {
+                    setContentPane(new DevicesPane(this));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JadbException e) {
+                    e.printStackTrace();
+                }
                 revalidate();
                 break;
             default:
