@@ -28,6 +28,8 @@ public class Start {
 
         guiThread.start();
 
+        // TODO launch adb server so user can run without adb installed
+
         Globals.adbConn = new JadbConnection();
         Globals.devices = (ArrayList<JadbDevice>) Globals.adbConn.getDevices();
 

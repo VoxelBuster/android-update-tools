@@ -2,10 +2,8 @@ package io.github.voxelbuster.autools.ui;
 
 import io.github.voxelbuster.autools.api.Globals;
 import io.github.voxelbuster.autools.api.ResourceManager;
-import se.vidstige.jadb.JadbException;
 
 import javax.swing.*;
-import java.io.IOException;
 
 public class ParentWindow extends JFrame {
 
@@ -44,10 +42,9 @@ public class ParentWindow extends JFrame {
             case DEVICES:
                 try {
                     setContentPane(new DevicesPane(this));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                } catch (JadbException e) {
-                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "ADB could not connect to your device. Make sure USB debugging is enabled.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 revalidate();
                 break;
