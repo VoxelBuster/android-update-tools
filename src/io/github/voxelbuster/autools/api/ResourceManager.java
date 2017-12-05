@@ -8,7 +8,9 @@ public class ResourceManager {
 
     public static void init() {
         String[] keys = {
-                "adb_path",
+                "adb_win",
+                "adb_linux",
+                "adb_mac",
                 "app_icon",
                 "flash_icon",
                 "backup_icon",
@@ -16,7 +18,9 @@ public class ResourceManager {
         };
 
         String[] vals = {
-                "res/adb/",
+                "res/adb/win/",
+                "res/adb/linux/",
+                "res/adb/mac/",
                 "res/img/app_icon.png",
                 "res/img/flash_icon.png",
                 "res/img/backup_icon.png",
@@ -30,5 +34,9 @@ public class ResourceManager {
 
     public static ImageIcon getIcon(String key) {
         return new ImageIcon(paths.get(key));
+    }
+
+    public static String getPath(String key) {
+        return paths.get(key);
     }
 }
