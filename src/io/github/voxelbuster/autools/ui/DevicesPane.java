@@ -15,6 +15,8 @@ import java.util.Map;
 public class DevicesPane extends JPanel {
     JList<String> deviceList;
 
+    private int selected = -1;
+
     public DevicesPane(ParentWindow parent) throws Exception {
         this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         this.setLayout(new GridLayout(0, 1));
@@ -47,8 +49,51 @@ public class DevicesPane extends JPanel {
             public void mouseExited(MouseEvent e) {}
         });
 
-        JButton nextButton = new JButton("Next >>");
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    refreshDevices();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                } catch (JadbException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {}
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+            @Override
+            public void mouseExited(MouseEvent e) {}
+        });
 
+        JButton nextButton = new JButton("Next >>");
+        nextButton.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                selected = deviceList.getSelectedIndex();
+                if (selected > -1) {
+                    Globals.selectedDevice = Globals.devices.get(selected);
+                    parent.setWindowState(ParentWindow.WindowState.INTENT);
+                } else {
+                    JOptionPane.showMessageDialog(null, "No device selected. Please select a device with USB debugging turned on.", "No device", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {}
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+            @Override
+            public void mouseExited(MouseEvent e) {}
+        });
+
+        buttonsPanel.add(refreshButton);
         buttonsPanel.add(cancelButton);
         buttonsPanel.add(nextButton);
 

@@ -14,7 +14,8 @@ public class ResourceManager {
                 "app_icon",
                 "flash_icon",
                 "backup_icon",
-                "restore_icon"
+                "restore_icon",
+                "romsdb"
         };
 
         String[] vals = {
@@ -24,7 +25,8 @@ public class ResourceManager {
                 "res/img/app_icon.png",
                 "res/img/flash_icon.png",
                 "res/img/backup_icon.png",
-                "res/img/restore_icon.png"
+                "res/img/restore_icon.png",
+                "res/data/romsdb.csv"
         };
 
         for (int i=0;i<keys.length;i++) {

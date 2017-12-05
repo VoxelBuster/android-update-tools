@@ -17,6 +17,7 @@ public class Globals {
 
     public static JadbConnection adbConn;
     public static ArrayList<JadbDevice> devices;
+    public static JadbDevice selectedDevice;
 
     public static Runtime runtime;
 }

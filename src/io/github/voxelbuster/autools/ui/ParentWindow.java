@@ -12,7 +12,8 @@ public class ParentWindow extends JFrame {
 
     public enum WindowState {
         HOME,
-        DEVICES
+        DEVICES,
+        INTENT
     }
 
     public enum Intent {
@@ -47,6 +48,14 @@ public class ParentWindow extends JFrame {
                     JOptionPane.showMessageDialog(null, "ADB could not connect to your device. Make sure USB debugging is enabled.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 revalidate();
+                break;
+            case INTENT:
+                switch (intent) {
+                    case FLASH:
+                        setContentPane(new FlashPane(this));
+                        revalidate();
+                        break;
+                }
                 break;
             default:
                 return;

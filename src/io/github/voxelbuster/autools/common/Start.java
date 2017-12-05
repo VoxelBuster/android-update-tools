@@ -24,30 +24,28 @@ public class Start {
 
         ResourceManager.init();
 
+        String adbPath = "";
+        if (Globals.os_name.contains("Windows")) {
+            adbPath = ResourceManager.getPath("adb_win");
+        } else if (Globals.os_name.contains("Mac")) {
+            adbPath = ResourceManager.getPath("adb_mac");
+        } else {
+            adbPath = ResourceManager.getPath("adb_linux");
+        }
+        try {
+            if (Globals.os_name.contains("nux")) {
+                Globals.runtime.exec("chmod +x " + adbPath + "adb");
+                Globals.runtime.exec("chmod +x " + adbPath + "fastboot");
+            }
+            Globals.runtime.exec(adbPath + "adb start-server");
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "adb start-server failed. Please make sure the correct adb is in the res directory and is executable.", "ADB error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
         Thread guiThread = new Thread(() -> Globals.parentWindow = new ParentWindow());
 
         guiThread.start();
-
-        // TODO launch adb server so user can run without adb installed
-        Thread adbServerStart = new Thread(() -> {
-            String adbPath = "";
-            if (Globals.os_name.contains("Windows")) {
-                adbPath = ResourceManager.getPath("adb_win");
-            } else if (Globals.os_name.contains("Mac")) {
-                adbPath = ResourceManager.getPath("adb_mac");
-            } else {
-                adbPath = ResourceManager.getPath("adb_linux");
-            }
-            try {
-                //if (Globals.os_name.contains("nux")) Globals.runtime.exec("gksu chmod +x " + adbPath +  "adb");
-                Globals.runtime.exec(adbPath + "adb start-server");
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "adb start-server failed. Please make sure the correct adb is in the res directory and is executable.", "ADB error", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
-            }
-        });
-
-        adbServerStart.start();
 
         Globals.adbConn = new JadbConnection();
         Globals.devices = (ArrayList<JadbDevice>) Globals.adbConn.getDevices();
