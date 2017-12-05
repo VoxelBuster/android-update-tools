@@ -39,9 +39,10 @@ public class Start {
                 adbPath = ResourceManager.getPath("adb_linux");
             }
             try {
+                //if (Globals.os_name.contains("nux")) Globals.runtime.exec("gksu chmod +x " + adbPath +  "adb");
                 Globals.runtime.exec(adbPath + "adb start-server");
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "adb start-server failed. Please make sure the correct adb is in the res directory.", "ADB error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "adb start-server failed. Please make sure the correct adb is in the res directory and is executable.", "ADB error", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
             }
         });
