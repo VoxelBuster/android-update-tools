@@ -39,6 +39,7 @@ public class FlashPane extends JTabbedPane {
         JButton cancelButton = new JButton("Cancel");
         JButton addButton = new JButton("Add");
         JButton rmButton = new JButton("Remove");
+        JButton nextButton = new JButton("Next >>");
 
         cancelButton.addMouseListener(new MouseListener() {
             @Override
@@ -74,5 +75,36 @@ public class FlashPane extends JTabbedPane {
             @Override
             public void mouseExited(MouseEvent e) {}
         });
+
+        rmButton.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selected = -1;
+                selected = romList.getSelectedIndex();
+                if (selected > -1) {
+                    listModel.remove(selected);
+                    romList.setModel(listModel);
+                }
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {}
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+            @Override
+            public void mouseExited(MouseEvent e) {}
+        });
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new FlowLayout());
+        buttonsPanel.add(cancelButton);
+        buttonsPanel.add(addButton);
+        buttonsPanel.add(rmButton);
+        buttonsPanel.add(nextButton);
+
+        selectRom.add(new JLabel("Add roms to flash queue"));
+        selectRom.add(romList);
+        selectRom.add(buttonsPanel);
     }
 }
