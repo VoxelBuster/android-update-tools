@@ -4,6 +4,7 @@ import io.github.voxelbuster.autools.api.Globals;
 import se.vidstige.jadb.managers.PropertyManager;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -31,6 +32,8 @@ public class FlashPane extends JTabbedPane {
         this.addTab("Flash Options", flashOpt);
 
         JList<String> romList = new JList<>();
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+
         JPanel romButtons = new JPanel();
 
         JButton cancelButton = new JButton("Cancel");
@@ -41,6 +44,26 @@ public class FlashPane extends JTabbedPane {
             @Override
             public void mouseClicked(MouseEvent e) {
                 parent.setWindowState(ParentWindow.WindowState.HOME);
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {}
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+            @Override
+            public void mouseExited(MouseEvent e) {}
+        });
+
+        addButton.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JFileChooser chooser = new JFileChooser();
+                chooser.setFileFilter(new FileNameExtensionFilter("Firmware ZIP", "zip", "Boot Image", "img"));
+                chooser.showOpenDialog(null);
+                String fname = chooser.getSelectedFile().getAbsolutePath();
+                listModel.addElement(fname);
+                romList.setModel(listModel);
             }
             @Override
             public void mousePressed(MouseEvent e) {}
