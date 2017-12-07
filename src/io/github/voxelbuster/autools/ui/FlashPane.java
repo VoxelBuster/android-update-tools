@@ -60,9 +60,14 @@ public class FlashPane extends JTabbedPane {
             @Override
             public void mouseClicked(MouseEvent e) {
                 JFileChooser chooser = new JFileChooser();
-                chooser.setFileFilter(new FileNameExtensionFilter("Firmware ZIP", "zip", "Boot Image", "img"));
+                chooser.addChoosableFileFilter(new FileNameExtensionFilter("Firmware ZIP", "zip"));
+                chooser.addChoosableFileFilter(new FileNameExtensionFilter("Boot Image", "img"));
                 chooser.showOpenDialog(null);
                 String fname = chooser.getSelectedFile().getAbsolutePath();
+                if (!(fname.endsWith(".zip") || fname.endsWith(".img"))) {
+                    JOptionPane.showMessageDialog(null, "Invalid rom file.","Invalid file",JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
                 listModel.addElement(fname);
                 romList.setModel(listModel);
             }
@@ -96,6 +101,21 @@ public class FlashPane extends JTabbedPane {
             public void mouseExited(MouseEvent e) {}
         });
 
+        nextButton.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                FlashPane.this.setSelectedComponent(flashOpt);
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {}
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+            @Override
+            public void mouseExited(MouseEvent e) {}
+        });
+
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new FlowLayout());
         buttonsPanel.add(cancelButton);
@@ -103,8 +123,63 @@ public class FlashPane extends JTabbedPane {
         buttonsPanel.add(rmButton);
         buttonsPanel.add(nextButton);
 
-        selectRom.add(new JLabel("Add roms to flash queue"));
+        JCheckBox backUp = new JCheckBox("Backup System partitions (boot, recovery, system)");
+        JCheckBox buData = new JCheckBox("Backup Data partition");
+        JCheckBox wipeCache = new JCheckBox("Wipe Cache (recommended)");
+        wipeCache.setSelected(true);
+        JCheckBox wipeDalvik = new JCheckBox("Wipe Dalvik (highly recommended)");
+        wipeDalvik.setSelected(true);
+        JCheckBox cleanAll = new JCheckBox("Clean Flash");
+
+        JPanel flashOptButtons = new JPanel();
+        JButton flashButton = new JButton("Flash");
+        flashButton.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Globals.roms.clear();
+                if (listModel.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "No roms selected, please select a rom.", "No rom selected", JOptionPane.INFORMATION_MESSAGE);
+                    FlashPane.this.setSelectedComponent(selectRom);
+                    return;
+                }
+                if (cleanAll.isSelected()) {
+                    int cont = JOptionPane.showConfirmDialog(null, "You have selected clean flash, which will wipe your cache, system, and data partitions. All apps and their data will be lost. Are you sure you want to do this?", "Clean Flash", JOptionPane.YES_NO_OPTION);
+                    if (cont == JOptionPane.NO_OPTION) {
+                        return;
+                    }
+                }
+                for (int i=0;i<listModel.size();i++) {
+                    Globals.roms.add(listModel.get(i));
+                }
+                Globals.wipeCache = wipeCache.isSelected();
+                Globals.wipeDalvik = wipeDalvik.isSelected();
+                Globals.clean = cleanAll.isSelected();
+                Globals.backupSystem = backUp.isSelected();
+                Globals.backupData = buData.isSelected();
+                parent.setWindowState(ParentWindow.WindowState.FLASH_PROGRESS);
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {}
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+            @Override
+            public void mouseExited(MouseEvent e) {}
+        });
+
+        flashOptButtons.add(cancelButton);
+        flashOptButtons.add(flashButton);
+
+        selectRom.add(new JLabel("Add roms to flash queue -- Please note all boot images will be flashed first regardless of their order."));
         selectRom.add(romList);
         selectRom.add(buttonsPanel);
+
+        flashOpt.add(backUp);
+        flashOpt.add(buData);
+        flashOpt.add(wipeCache);
+        flashOpt.add(wipeDalvik);
+        flashOpt.add(cleanAll);
+        flashOpt.add(flashOptButtons);
     }
 }

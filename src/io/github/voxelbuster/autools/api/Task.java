@@ -17,6 +17,12 @@ public class Task {
         RECOVERY
     }
 
+    public enum BootCommand {
+        FASTBOOT,
+        RECOVERY,
+        SYSTEM
+    }
+
     public void setDevice(JadbDevice device) {
         this.device = device;
     }
@@ -26,6 +32,18 @@ public class Task {
     }
 
     public void flashRecovery(File img) {
+
+    }
+
+    public void reboot(BootCommand cmd) {
+
+    }
+
+    public void backup(Partition part, File archive) {
+
+    }
+
+    public void restore(File archive) {
 
     }
 

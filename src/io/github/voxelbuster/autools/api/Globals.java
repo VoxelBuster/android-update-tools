@@ -19,5 +19,8 @@ public class Globals {
     public static ArrayList<JadbDevice> devices;
     public static JadbDevice selectedDevice;
 
+    public static ArrayList<String> roms = new ArrayList<>();
+    public static boolean wipeDalvik, wipeCache, backupSystem, backupData, clean;
+
     public static Runtime runtime;
 }
