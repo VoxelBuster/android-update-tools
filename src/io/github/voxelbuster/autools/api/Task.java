@@ -23,6 +23,8 @@ public class Task {
         SYSTEM
     }
 
+
+
     public void setDevice(JadbDevice device) {
         this.device = device;
     }
