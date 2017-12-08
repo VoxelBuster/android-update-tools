@@ -32,6 +32,9 @@ public class Start {
         } else {
             adbPath = ResourceManager.getPath("adb_linux");
         }
+        if (!(new File(adbPath + "adb.exe").exists() || new File(adbPath + "adb").exists())) {
+            ResourceManager.fetchADB();
+        }
         try {
             if (Globals.os_name.contains("nux")) {
                 Globals.runtime.exec("chmod +x " + adbPath + "adb");
