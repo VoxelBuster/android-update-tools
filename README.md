@@ -1,6 +1,6 @@
-## Android Update Tools
+# Android Update Tools
 
-# Dependencies
+## Dependencies
 https://github.com/vidstige/jadb (se.vidstige.jadb) (source)
 
 https://commons.apache.org/proper/commons-csv/ (org.apache.commons.csv) (source)
