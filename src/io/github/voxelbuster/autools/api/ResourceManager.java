@@ -1,7 +1,16 @@
 package io.github.voxelbuster.autools.api;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.HashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class ResourceManager {
     private static HashMap<String, String> paths = new HashMap<>();
@@ -44,7 +53,7 @@ public class ResourceManager {
         return paths.get(key);
     }
     
-    public static String fetchADB() {
+    public static void fetchADB() {
         String adbPath;
         String suffix;
         if (Globals.os_name.contains("Windows")) {
@@ -57,11 +66,24 @@ public class ResourceManager {
             adbPath = getPath("adb_linux");
             suffix = "linux.zip";
         }
-        URL resource = new URL(getPath("adb_dl") + suffix);
-        ReadableByteChannel rbc = Channels.newChannel(resource.openStream());
-        FileOutputStream fos = new FileOutputStream("res/adb/adb-temp.zip");
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-        unzip("res/adb/adb-temp.zip", getPath(adbPath))
+        URL resource = null;
+        try {
+            resource = new URL(getPath("adb_dl") + suffix);
+        } catch (Exception e) {
+            System.err.println("Bad download URL");
+            JOptionPane.showMessageDialog(null,"Could not download ADB, please install it manually", "Download Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        ReadableByteChannel rbc = null;
+        try {
+            rbc = Channels.newChannel(resource.openStream());
+            FileOutputStream fos = new FileOutputStream("res/adb/adb-temp.zip");
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null,"Could not download ADB, please install it manually", "Download Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        unzip("res/adb/adb-temp.zip", getPath(adbPath));
     }
     
     public static void unzip(String zipFilePath, String destDir) {
@@ -90,7 +112,7 @@ public class ResourceManager {
             zis.closeEntry();
             zis.close();
             fis.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         

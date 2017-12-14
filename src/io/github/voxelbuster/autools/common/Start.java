@@ -7,6 +7,7 @@ import se.vidstige.jadb.JadbConnection;
 import se.vidstige.jadb.JadbDevice;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -24,7 +25,7 @@ public class Start {
 
         ResourceManager.init();
 
-        String adbPath = "";
+        String adbPath;
         if (Globals.os_name.contains("Windows")) {
             adbPath = ResourceManager.getPath("adb_win");
         } else if (Globals.os_name.contains("Mac")) {
