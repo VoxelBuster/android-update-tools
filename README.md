@@ -11,4 +11,5 @@ https://developer.android.com/studio/releases/platform-tools.html (resources)
 
 ## Notes
 `res/adb/` will not be part of the release
+
 `src/` will not be part of the release
