@@ -1,1 +1,0 @@
-java -cp .\bin io.github.voxelbuster.autools.common.Start
