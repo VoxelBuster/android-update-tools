@@ -24,6 +24,7 @@ public class Commands {
             lines.add(br.readLine());
         }
         lines.add("Process completed with code " + exitVal);
-        return (String[]) lines.toArray();
+        String[] arr = new String[]{};
+        return lines.toArray(arr);
     }
 }

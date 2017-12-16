@@ -1,13 +1,14 @@
 package io.github.voxelbuster.autools.ui;
 
 import io.github.voxelbuster.autools.api.Globals;
+import io.github.voxelbuster.autools.api.Task;
 import se.vidstige.jadb.managers.PropertyManager;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
+import java.util.ArrayList;
 
 public class FlashPane extends JTabbedPane {
     public FlashPane(ParentWindow parent) {
@@ -33,6 +34,7 @@ public class FlashPane extends JTabbedPane {
 
         JList<String> romList = new JList<>();
         DefaultListModel<String> listModel = new DefaultListModel<>();
+        ArrayList<Task.Partition> partitions = new ArrayList<>();
 
         JPanel romButtons = new JPanel();
 
@@ -68,8 +70,84 @@ public class FlashPane extends JTabbedPane {
                     JOptionPane.showMessageDialog(null, "Invalid rom file.","Invalid file",JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
-                listModel.addElement(fname);
-                romList.setModel(listModel);
+                final boolean[] cancel = {false};
+                if (fname.endsWith(".img")) {
+                    JDialog partDlog = new JDialog();
+                    partDlog.setLayout(new GridLayout(0, 1));
+                    ButtonGroup bg = new ButtonGroup();
+                    JRadioButton boot = new JRadioButton("Boot"), recovery = new JRadioButton("Recovery"), sys = new JRadioButton("System");
+                    recovery.setSelected(true);
+                    JButton confirm = new JButton("OK");
+                    confirm.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if (boot.isSelected()) {
+                                partitions.add(Task.Partition.BOOT);
+                            } else if (recovery.isSelected()) {
+                                partitions.add(Task.Partition.RECOVERY);
+                            } else if (sys.isSelected()) {
+                                partitions.add(Task.Partition.SYSTEM);
+                            } else {
+                                partitions.add(Task.Partition.SIDELOAD);
+                            }
+                            partDlog.setVisible(false);
+                            partDlog.dispose();
+                        }
+                    });
+                    partDlog.setModal(true);
+                    bg.add(boot);
+                    bg.add(recovery);
+                    bg.add(sys);
+                    partDlog.add(new JLabel("Select partition to flash image"));
+                    partDlog.add(boot);
+                    partDlog.add(recovery);
+                    partDlog.add(sys);
+                    partDlog.add(confirm);
+                    partDlog.pack();
+                    partDlog.addWindowListener(new WindowListener() {
+                        @Override
+                        public void windowOpened(WindowEvent e) {
+
+                        }
+
+                        @Override
+                        public void windowClosing(WindowEvent e) {
+
+                        }
+
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                            cancel[0] = true;
+                        }
+
+                        @Override
+                        public void windowIconified(WindowEvent e) {
+
+                        }
+
+                        @Override
+                        public void windowDeiconified(WindowEvent e) {
+
+                        }
+
+                        @Override
+                        public void windowActivated(WindowEvent e) {
+
+                        }
+
+                        @Override
+                        public void windowDeactivated(WindowEvent e) {
+
+                        }
+                    });
+                    partDlog.setVisible(true);
+                } else {
+                    partitions.add(Task.Partition.SIDELOAD);
+                }
+                if (!cancel[0]) {
+                    listModel.addElement(fname);
+                    romList.setModel(listModel);
+                }
             }
             @Override
             public void mousePressed(MouseEvent e) {}
@@ -89,6 +167,7 @@ public class FlashPane extends JTabbedPane {
                 if (selected > -1) {
                     listModel.remove(selected);
                     romList.setModel(listModel);
+                    partitions.remove(selected);
                 }
             }
             @Override
@@ -150,6 +229,7 @@ public class FlashPane extends JTabbedPane {
                 }
                 for (int i=0;i<listModel.size();i++) {
                     Globals.roms.add(listModel.get(i));
+                    Globals.partitions.add(partitions.get(i));
                 }
                 Globals.wipeCache = wipeCache.isSelected();
                 Globals.wipeDalvik = wipeDalvik.isSelected();

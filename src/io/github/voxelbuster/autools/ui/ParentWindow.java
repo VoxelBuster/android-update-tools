@@ -51,7 +51,9 @@ public class ParentWindow extends JFrame {
                 revalidate();
                 break;
             case FLASH_PROGRESS:
-                setContentPane(new FlashProgressPane(this));
+                FlashProgressPane fpp = new FlashProgressPane(this);
+                setContentPane(fpp);
+                Globals.runFlash(fpp);
                 revalidate();
                 break;
             case INTENT:
