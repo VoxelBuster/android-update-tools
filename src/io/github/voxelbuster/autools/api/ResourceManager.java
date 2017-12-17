@@ -40,7 +40,7 @@ public class ResourceManager {
                 "https://dl.google.com/android/repository/platform-tools-latest-"
         };
 
-        for (int i=0;i<keys.length;i++) {
+        for (int i = 0; i < keys.length; i++) {
             paths.put(keys[i], vals[i]);
         }
     }
@@ -52,7 +52,7 @@ public class ResourceManager {
     public static String getPath(String key) {
         return paths.get(key);
     }
-    
+
     public static void fetchADB() {
         String adbPath;
         String suffix;
@@ -71,7 +71,7 @@ public class ResourceManager {
             resource = new URL(getPath("adb_dl") + suffix);
         } catch (Exception e) {
             System.err.println("Bad download URL");
-            JOptionPane.showMessageDialog(null,"Could not download ADB, please install it manually", "Download Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Could not download ADB, please install it manually", "Download Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         ReadableByteChannel rbc = null;
@@ -80,30 +80,30 @@ public class ResourceManager {
             FileOutputStream fos = new FileOutputStream("res/adb/adb-temp.zip");
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null,"Could not download ADB, please install it manually", "Download Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Could not download ADB, please install it manually", "Download Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         unzip("res/adb/adb-temp.zip", getPath(adbPath));
     }
-    
+
     public static void unzip(String zipFilePath, String destDir) {
         File dir = new File(destDir);
-        if(!dir.exists()) dir.mkdirs();
+        if (!dir.exists()) dir.mkdirs();
         FileInputStream fis;
         byte[] buffer = new byte[1024];
         try {
             fis = new FileInputStream(zipFilePath);
             ZipInputStream zis = new ZipInputStream(fis);
             ZipEntry ze = zis.getNextEntry();
-            while(ze != null){
+            while (ze != null) {
                 String fileName = ze.getName();
                 File newFile = new File(destDir + File.separator + fileName);
-                System.out.println("Unzipping to "+newFile.getAbsolutePath());
+                System.out.println("Unzipping to " + newFile.getAbsolutePath());
                 new File(newFile.getParent()).mkdirs();
                 FileOutputStream fos = new FileOutputStream(newFile);
                 int len;
                 while ((len = zis.read(buffer)) > 0) {
-                fos.write(buffer, 0, len);
+                    fos.write(buffer, 0, len);
                 }
                 fos.close();
                 zis.closeEntry();
@@ -115,6 +115,6 @@ public class ResourceManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
     }
 }

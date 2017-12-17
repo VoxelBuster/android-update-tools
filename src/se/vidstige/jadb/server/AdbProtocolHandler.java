@@ -92,7 +92,7 @@ class AdbProtocolHandler implements Runnable {
                     output.writeBytes("OKAY");
                     send(output, device.getType());
                 } else if (command.startsWith("host-serial:")) {
-                    String[] strs = command.split(":",0);
+                    String[] strs = command.split(":", 0);
                     if (strs.length != 3) {
                         throw new ProtocolException("Invalid command: " + command);
                     }

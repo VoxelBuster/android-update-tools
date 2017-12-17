@@ -11,11 +11,17 @@ public class Package {
     }
 
     @Override
-    public String toString() { return name; }
+    public String toString() {
+        return name;
+    }
 
     @Override
-    public boolean equals(Object o) { return name.equals(o); }
+    public boolean equals(Object o) {
+        return name.equals(o);
+    }
 
     @Override
-    public int hashCode() { return name.hashCode(); }
+    public int hashCode() {
+        return name.hashCode();
+    }
 }

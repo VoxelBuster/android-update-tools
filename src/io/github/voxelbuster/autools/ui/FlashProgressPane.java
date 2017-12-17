@@ -61,11 +61,13 @@ public class FlashProgressPane extends JPanel {
 
     public void print(String s) {
         logcat.append(s);
+        logcat.revalidate();
     }
 
     public void println(String s) {
         logcat.append(s);
         logcat.append("\n");
+        logcat.revalidate();
     }
 
 }

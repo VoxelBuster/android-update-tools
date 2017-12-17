@@ -48,14 +48,22 @@ public class FlashPane extends JTabbedPane {
             public void mouseClicked(MouseEvent e) {
                 parent.setWindowState(ParentWindow.WindowState.HOME);
             }
+
             @Override
-            public void mousePressed(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+            }
+
             @Override
-            public void mouseReleased(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {
+            }
+
             @Override
-            public void mouseEntered(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {
+            }
+
             @Override
-            public void mouseExited(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {
+            }
         });
 
         addButton.addMouseListener(new MouseListener() {
@@ -67,7 +75,7 @@ public class FlashPane extends JTabbedPane {
                 chooser.showOpenDialog(null);
                 String fname = chooser.getSelectedFile().getAbsolutePath();
                 if (!(fname.endsWith(".zip") || fname.endsWith(".img"))) {
-                    JOptionPane.showMessageDialog(null, "Invalid rom file.","Invalid file",JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Invalid rom file.", "Invalid file", JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
                 final boolean[] cancel = {false};
@@ -149,14 +157,22 @@ public class FlashPane extends JTabbedPane {
                     romList.setModel(listModel);
                 }
             }
+
             @Override
-            public void mousePressed(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+            }
+
             @Override
-            public void mouseReleased(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {
+            }
+
             @Override
-            public void mouseEntered(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {
+            }
+
             @Override
-            public void mouseExited(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {
+            }
         });
 
         rmButton.addMouseListener(new MouseListener() {
@@ -170,14 +186,22 @@ public class FlashPane extends JTabbedPane {
                     partitions.remove(selected);
                 }
             }
+
             @Override
-            public void mousePressed(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+            }
+
             @Override
-            public void mouseReleased(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {
+            }
+
             @Override
-            public void mouseEntered(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {
+            }
+
             @Override
-            public void mouseExited(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {
+            }
         });
 
         nextButton.addMouseListener(new MouseListener() {
@@ -185,14 +209,22 @@ public class FlashPane extends JTabbedPane {
             public void mouseClicked(MouseEvent e) {
                 FlashPane.this.setSelectedComponent(flashOpt);
             }
+
             @Override
-            public void mousePressed(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+            }
+
             @Override
-            public void mouseReleased(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {
+            }
+
             @Override
-            public void mouseEntered(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {
+            }
+
             @Override
-            public void mouseExited(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {
+            }
         });
 
         JPanel buttonsPanel = new JPanel();
@@ -227,7 +259,7 @@ public class FlashPane extends JTabbedPane {
                         return;
                     }
                 }
-                for (int i=0;i<listModel.size();i++) {
+                for (int i = 0; i < listModel.size(); i++) {
                     Globals.roms.add(listModel.get(i));
                     Globals.partitions.add(partitions.get(i));
                 }
@@ -238,14 +270,22 @@ public class FlashPane extends JTabbedPane {
                 Globals.backupData = buData.isSelected();
                 parent.setWindowState(ParentWindow.WindowState.FLASH_PROGRESS);
             }
+
             @Override
-            public void mousePressed(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+            }
+
             @Override
-            public void mouseReleased(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {
+            }
+
             @Override
-            public void mouseEntered(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {
+            }
+
             @Override
-            public void mouseExited(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {
+            }
         });
 
         flashOptButtons.add(cancelButton);

@@ -1,5 +1,6 @@
 package io.github.voxelbuster.autools.common;
 
+import io.github.voxelbuster.autools.api.ApiCommands;
 import io.github.voxelbuster.autools.api.Globals;
 import io.github.voxelbuster.autools.api.ResourceManager;
 import io.github.voxelbuster.autools.ui.ParentWindow;
@@ -25,25 +26,30 @@ public class Start {
 
         ResourceManager.init();
 
-        String adbPath;
         if (Globals.os_name.contains("Windows")) {
-            adbPath = ResourceManager.getPath("adb_win");
+            Globals.adbPath = ResourceManager.getPath("adb_win");
         } else if (Globals.os_name.contains("Mac")) {
-            adbPath = ResourceManager.getPath("adb_mac");
+            Globals.adbPath = ResourceManager.getPath("adb_mac");
         } else {
-            adbPath = ResourceManager.getPath("adb_linux");
+            Globals.adbPath = ResourceManager.getPath("adb_linux");
         }
-        if (!(new File(adbPath + "adb.exe").exists() || new File(adbPath + "adb").exists())) {
+        if (!(new File(Globals.adbPath + "adb.exe").exists() || new File(Globals.adbPath + "adb").exists())) {
             ResourceManager.fetchADB();
         }
         try {
             if (Globals.os_name.contains("nux")) {
-                Globals.runtime.exec("chmod +x " + adbPath + "adb");
-                Globals.runtime.exec("chmod +x " + adbPath + "fastboot");
+                for (String ln : ApiCommands.concat(ApiCommands.runCommand("chmod +x " + Globals.adbPath + "adb"),
+                        ApiCommands.runCommand("chmod +x " + Globals.adbPath + "fastboot"))) {
+                    System.out.println(ln);
+                }
             }
-            Globals.runtime.exec(adbPath + "adb start-server");
+            for (String ln : ApiCommands.runCommand(Globals.adbPath + "adb start-server")) {
+                System.out.println(ln);
+            }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "adb start-server failed. Please make sure the correct adb is in the res directory and is executable.", "ADB error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "adb start-server failed. Please make sure the " +
+                            "correct adb is in the res directory and is executable.", "ADB error",
+                    JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
 

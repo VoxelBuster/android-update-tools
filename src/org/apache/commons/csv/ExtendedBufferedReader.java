@@ -17,14 +17,11 @@
 
 package org.apache.commons.csv;
 
-import static org.apache.commons.csv.Constants.CR;
-import static org.apache.commons.csv.Constants.END_OF_STREAM;
-import static org.apache.commons.csv.Constants.LF;
-import static org.apache.commons.csv.Constants.UNDEFINED;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+
+import static org.apache.commons.csv.Constants.*;
 
 /**
  * A special buffered reader which supports sophisticated read access.
@@ -35,13 +32,19 @@ import java.io.Reader;
  */
 final class ExtendedBufferedReader extends BufferedReader {
 
-    /** The last char returned */
+    /**
+     * The last char returned
+     */
     private int lastChar = UNDEFINED;
 
-    /** The count of EOLs (CR/LF/CRLF) seen so far */
+    /**
+     * The count of EOLs (CR/LF/CRLF) seen so far
+     */
     private long eolCounter;
 
-    /** The position, which is number of characters read so far */
+    /**
+     * The position, which is number of characters read so far
+     */
     private long position;
 
     private boolean closed;
@@ -136,9 +139,7 @@ final class ExtendedBufferedReader extends BufferedReader {
      * still return this value. Does not affect line number or last character.
      *
      * @return the next character
-     *
-     * @throws IOException
-     *             if there is an error in reading
+     * @throws IOException if there is an error in reading
      */
     int lookAhead() throws IOException {
         super.mark(1);
@@ -177,8 +178,7 @@ final class ExtendedBufferedReader extends BufferedReader {
     /**
      * Closes the stream.
      *
-     * @throws IOException
-     *             If an I/O error occurs
+     * @throws IOException If an I/O error occurs
      */
     @Override
     public void close() throws IOException {

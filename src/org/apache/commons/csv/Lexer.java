@@ -17,21 +17,12 @@
 
 package org.apache.commons.csv;
 
-import static org.apache.commons.csv.Constants.BACKSPACE;
-import static org.apache.commons.csv.Constants.CR;
-import static org.apache.commons.csv.Constants.END_OF_STREAM;
-import static org.apache.commons.csv.Constants.FF;
-import static org.apache.commons.csv.Constants.LF;
-import static org.apache.commons.csv.Constants.TAB;
-import static org.apache.commons.csv.Constants.UNDEFINED;
-import static org.apache.commons.csv.Token.Type.COMMENT;
-import static org.apache.commons.csv.Token.Type.EOF;
-import static org.apache.commons.csv.Token.Type.EORECORD;
-import static org.apache.commons.csv.Token.Type.INVALID;
-import static org.apache.commons.csv.Token.Type.TOKEN;
-
 import java.io.Closeable;
 import java.io.IOException;
+
+import static org.apache.commons.csv.Constants.*;
+import static org.apache.commons.csv.Token.Type.COMMENT;
+import static org.apache.commons.csv.Token.Type.*;
 
 /**
  * Lexical analyzer.
@@ -56,11 +47,13 @@ final class Lexer implements Closeable {
     private final boolean ignoreSurroundingSpaces;
     private final boolean ignoreEmptyLines;
 
-    /** The input stream */
+    /**
+     * The input stream
+     */
     private final ExtendedBufferedReader reader;
     private String firstEol;
 
-    String getFirstEol(){
+    String getFirstEol() {
         return firstEol;
     }
 
@@ -80,11 +73,9 @@ final class Lexer implements Closeable {
      * A token corresponds to a term, a record change or an end-of-file indicator.
      * </p>
      *
-     * @param token
-     *            an existing Token object to reuse. The caller is responsible to initialize the Token.
+     * @param token an existing Token object to reuse. The caller is responsible to initialize the Token.
      * @return the next token found
-     * @throws java.io.IOException
-     *             on stream access error
+     * @throws java.io.IOException on stream access error
      */
     Token nextToken(final Token token) throws IOException {
 
@@ -181,13 +172,10 @@ final class Lexer implements Closeable {
      * <li>an unescaped delimiter has been reached (TOKEN)</li>
      * </ul>
      *
-     * @param token
-     *            the current token
-     * @param ch
-     *            the current character
+     * @param token the current token
+     * @param ch    the current character
      * @return the filled token
-     * @throws IOException
-     *             on stream access error
+     * @throws IOException on stream access error
      */
     private Token parseSimpleToken(final Token token, int ch) throws IOException {
         // Faster to use while(true)+break than while(token.type == INVALID)
@@ -237,11 +225,9 @@ final class Lexer implements Closeable {
      * </ul>
      * <li>end of stream has been reached (EOF)</li> </ul>
      *
-     * @param token
-     *            the current token
+     * @param token the current token
      * @return a valid token object
-     * @throws IOException
-     *             on invalid state: EOF before closing encapsulator or invalid character before delimiter or EOL
+     * @throws IOException on invalid state: EOF before closing encapsulator or invalid character before delimiter or EOL
      */
     private Token parseEncapsulatedToken(final Token token) throws IOException {
         // save current line number in case needed for IOE
@@ -317,6 +303,7 @@ final class Lexer implements Closeable {
     }
 
     // TODO escape handling needs more work
+
     /**
      * Handle an escape sequence.
      * The current character must be the escape character.
@@ -324,39 +311,39 @@ final class Lexer implements Closeable {
      * on the input stream.
      *
      * @return the unescaped character (as an int) or {@link Constants#END_OF_STREAM} if char following the escape is
-     *      invalid.
+     * invalid.
      * @throws IOException if there is a problem reading the stream or the end of stream is detected:
-     *      the escape character is not allowed at end of strem
+     *                     the escape character is not allowed at end of strem
      */
     int readEscape() throws IOException {
         // the escape char has just been read (normally a backslash)
         final int ch = reader.read();
         switch (ch) {
-        case 'r':
-            return CR;
-        case 'n':
-            return LF;
-        case 't':
-            return TAB;
-        case 'b':
-            return BACKSPACE;
-        case 'f':
-            return FF;
-        case CR:
-        case LF:
-        case FF: // TODO is this correct?
-        case TAB: // TODO is this correct? Do tabs need to be escaped?
-        case BACKSPACE: // TODO is this correct?
-            return ch;
-        case END_OF_STREAM:
-            throw new IOException("EOF whilst processing escape sequence");
-        default:
-            // Now check for meta-characters
-            if (isMetaChar(ch)) {
+            case 'r':
+                return CR;
+            case 'n':
+                return LF;
+            case 't':
+                return TAB;
+            case 'b':
+                return BACKSPACE;
+            case 'f':
+                return FF;
+            case CR:
+            case LF:
+            case FF: // TODO is this correct?
+            case TAB: // TODO is this correct? Do tabs need to be escaped?
+            case BACKSPACE: // TODO is this correct?
                 return ch;
-            }
-            // indicate unexpected char - available from in.getLastChar()
-            return END_OF_STREAM;
+            case END_OF_STREAM:
+                throw new IOException("EOF whilst processing escape sequence");
+            default:
+                // Now check for meta-characters
+                if (isMetaChar(ch)) {
+                    return ch;
+                }
+                // indicate unexpected char - available from in.getLastChar()
+                return END_OF_STREAM;
         }
     }
 
@@ -443,16 +430,15 @@ final class Lexer implements Closeable {
 
     private boolean isMetaChar(final int ch) {
         return ch == delimiter ||
-               ch == escape ||
-               ch == quoteChar ||
-               ch == commentStart;
+                ch == escape ||
+                ch == quoteChar ||
+                ch == commentStart;
     }
 
     /**
      * Closes resources.
      *
-     * @throws IOException
-     *             If an I/O error occurs
+     * @throws IOException If an I/O error occurs
      */
     @Override
     public void close() throws IOException {

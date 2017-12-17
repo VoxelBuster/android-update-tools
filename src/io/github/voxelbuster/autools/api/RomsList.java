@@ -19,7 +19,7 @@ public class RomsList {
     }
 
     public static String getTwrpUrl(String codename) {
-        String trueCn = codename.split("-")[codename.split("-").length-1];
+        String trueCn = codename.split("-")[codename.split("-").length - 1];
         return "";
     }
 }

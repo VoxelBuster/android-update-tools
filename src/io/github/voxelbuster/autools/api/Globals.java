@@ -2,7 +2,6 @@ package io.github.voxelbuster.autools.api;
 
 import io.github.voxelbuster.autools.ui.FlashProgressPane;
 import io.github.voxelbuster.autools.ui.ParentWindow;
-import jdk.nashorn.internal.scripts.JO;
 import se.vidstige.jadb.JadbConnection;
 import se.vidstige.jadb.JadbDevice;
 
@@ -30,9 +29,8 @@ public class Globals {
     public static Runtime runtime;
 
     public static Thread flashThread;
+    public static String adbPath;
 
-    // TODO flash all images in correct order
-    // TODO mark the partition that each fb image is to be flashed to
     // TODO finish and clean code
     public static void runFlash(FlashProgressPane ui) {
         flashThread = new Thread(new Runnable() {
@@ -42,9 +40,12 @@ public class Globals {
                     if (backupSystem) {
                         ui.setStatus("Backing up system");
                         String backupDir = System.getProperty("user.home") + "/android_update_tools/backups/";
-                        String backupName = "system_backup-" + Calendar.getInstance().getTime().toString().replace(" ", "_") + ".ab";
-                        JOptionPane.showMessageDialog(null, "Your device may ask you to confirm backing up data. Confirm it to continue.");
-                        for (String ln : Commands.runCommand("adb backup -system -f " + backupDir + backupName)) {
+                        String backupName = "system_backup-" + Calendar.getInstance().getTime().toString()
+                                .replace(" ", "_") + ".ab";
+                        JOptionPane.showMessageDialog(null, "Your device may ask you to " +
+                                "confirm backing up data. Confirm it to continue.");
+                        for (String ln : ApiCommands.runAdbCommand(selectedDevice, "backup", "-system",
+                                "-f", backupDir + backupName)) {
                             System.out.println(ln);
                             ui.println(ln);
                         }
@@ -53,9 +54,12 @@ public class Globals {
                     if (backupData) {
                         ui.setStatus("Backing up data");
                         String backupDir = System.getProperty("user.home") + "/android_update_tools/backups/";
-                        String backupName = "data_backup-" + Calendar.getInstance().getTime().toString().replace(" ", "_") + ".ab";
-                        JOptionPane.showMessageDialog(null, "Your device may ask you to confirm backing up data. Confirm it to continue.");
-                        for (String ln : Commands.runCommand("adb backup -apk -shared -all -f " + backupDir + backupName)) {
+                        String backupName = "data_backup-" + Calendar.getInstance().getTime().toString()
+                                .replace(" ", "_") + ".ab";
+                        JOptionPane.showMessageDialog(null, "Your device may ask you to " +
+                                "confirm backing up data. Confirm it to continue.");
+                        for (String ln : ApiCommands.runAdbCommand(selectedDevice, "backup", "-apk",
+                                "-shared", "-all", backupDir + backupName)) {
                             System.out.println(ln);
                             ui.println(ln);
                         }
@@ -63,12 +67,16 @@ public class Globals {
                     }
                     if (Globals.clean) {
                         ui.setStatus("Rebooting to bootloader...");
-                        selectedDevice.executeShell("reboot", "fastboot");
+                        for (String ln : ApiCommands.runAdbCommand(selectedDevice, "reboot",
+                                "fastboot")) {
+                            System.out.println(ln);
+                            ui.println(ln);
+                        }
                         //wait for device to come back online
                         boolean rebooted = false;
                         String deviceHash = selectedDevice.getSerial();
                         while (!rebooted) {
-                            for (String ln : Commands.runCommand("fastboot devices")) {
+                            for (String ln : ApiCommands.runCommand(Globals.adbPath + "fastboot devices")) {
                                 if (ln.contains(deviceHash)) {
                                     rebooted = true;
                                 }
@@ -76,17 +84,17 @@ public class Globals {
                         }
                         ui.setStatus("Cleaning device");
                         ui.println("Cleaning Data, System, and Cache. Recovery and Boot will be left alone.");
-                        for (String ln : Commands.runCommand("fastboot erase data")) {
+                        for (String ln : ApiCommands.runCommand(Globals.adbPath + "fastboot erase data")) {
                             if (ln.contains(deviceHash)) {
                                 rebooted = true;
                             }
                         }
-                        for (String ln : Commands.runCommand("fastboot erase system")) {
+                        for (String ln : ApiCommands.runCommand(Globals.adbPath + "fastboot erase system")) {
                             if (ln.contains(deviceHash)) {
                                 rebooted = true;
                             }
                         }
-                        for (String ln : Commands.runCommand("fastboot erase cache")) {
+                        for (String ln : ApiCommands.runCommand(Globals.adbPath + "fastboot erase cache")) {
                             if (ln.contains(deviceHash)) {
                                 rebooted = true;
                             }
@@ -102,21 +110,24 @@ public class Globals {
                     }
                     if (flashBoot) {
                         ui.setStatus("Rebooting to bootloader...");
-                        selectedDevice.executeShell("reboot", "fastboot");
+                        for (String ln : ApiCommands.runAdbShellCommand(selectedDevice, "reboot", "fastboot")) {
+                            ui.println(ln);
+                            System.out.println(ln);
+                        }
                         //wait for device to come back online
                         boolean rebooted = false;
                         String deviceHash = selectedDevice.getSerial();
                         while (!rebooted) {
-                            for (String ln : Commands.runCommand("fastboot devices")) {
+                            for (String ln : ApiCommands.runCommand(Globals.adbPath + "fastboot devices")) {
                                 if (ln.contains(deviceHash)) {
                                     rebooted = true;
                                 }
                             }
                         }
                         ui.setStatus("Getting device info");
-                        Commands.runCommand("fastboot -s " + deviceHash);
+                        ApiCommands.runCommand(Globals.adbPath + "fastboot -s " + deviceHash);
                         boolean isUnlocked = false;
-                        for (String ln : Commands.runCommand("fastboot oem device-info")) {
+                        for (String ln : ApiCommands.runCommand(Globals.adbPath + "fastboot oem device-info")) {
                             if (ln.contains("unlocked") && ln.contains("true")) {
                                 isUnlocked = true;
                             }
@@ -124,14 +135,16 @@ public class Globals {
                             ui.println(ln);
                         }
                         if (!isUnlocked) {
-                            int choice = JOptionPane.showConfirmDialog(null, "Your bootloader is locked and will need to be unlocked.\n" +
+                            int choice = JOptionPane.showConfirmDialog(null, "Your bootloader " +
+                                    "is locked and will need to be unlocked.\n" +
                                     "This will likely wipe your device. Are you sure you want to continue?\nWARNING:" +
-                                    "If OEM unlocking is not enabled in your device settings, do not continue as it may brick your device!", "Unlock warning", JOptionPane.YES_NO_OPTION);
+                                    "If OEM unlocking is not enabled in your device settings, do not continue as it " +
+                                    "may brick your device!", "Unlock warning", JOptionPane.YES_NO_OPTION);
                             if (choice == JOptionPane.YES_OPTION) {
                                 ui.setStatus("Unlocking bootloader");
-                                for (String o : Commands.runCommand("fastboot oem unlock")) {
-                                    System.out.println(o);
-                                    ui.println(o);
+                                for (String ln : ApiCommands.runCommand(Globals.adbPath + "fastboot oem unlock")) {
+                                    System.out.println(ln);
+                                    ui.println(ln);
                                 }
                             } else {
                                 ui.setStatus("Canceling");
@@ -143,9 +156,10 @@ public class Globals {
                             switch (partitions.get(i)) {
                                 case RECOVERY:
                                     if (roms.get(i).endsWith(".img")) {
-                                        for (String o : Commands.runCommand("fastboot flash recovery " + roms.get(i))) {
-                                            System.out.println(o);
-                                            ui.println(o);
+                                        for (String ln : ApiCommands.runCommand(Globals.adbPath + "fastboot flash recovery " +
+                                                roms.get(i))) {
+                                            System.out.println(ln);
+                                            ui.println(ln);
                                         }
                                         roms.remove(i);
                                         ui.setProgress(ui.getProgress() + 1);
@@ -153,9 +167,10 @@ public class Globals {
                                     break;
                                 case BOOT:
                                     if (roms.get(i).endsWith(".img")) {
-                                        for (String o : Commands.runCommand("fastboot flash boot " + roms.get(i))) {
-                                            System.out.println(o);
-                                            ui.println(o);
+                                        for (String ln : ApiCommands.runCommand(Globals.adbPath + "fastboot flash boot " +
+                                                roms.get(i))) {
+                                            System.out.println(ln);
+                                            ui.println(ln);
                                         }
                                         roms.remove(i);
                                         ui.setProgress(ui.getProgress() + 1);
@@ -163,9 +178,10 @@ public class Globals {
                                     break;
                                 case SYSTEM:
                                     if (roms.get(i).endsWith(".img")) {
-                                        for (String o : Commands.runCommand("fastboot flash system " + roms.get(i))) {
-                                            System.out.println(o);
-                                            ui.println(o);
+                                        for (String ln : ApiCommands.runCommand(Globals.adbPath + "fastboot flash system " +
+                                                roms.get(i))) {
+                                            System.out.println(ln);
+                                            ui.println(ln);
                                         }
                                         roms.remove(i);
                                         ui.setProgress(ui.getProgress() + 1);
@@ -177,11 +193,14 @@ public class Globals {
                         }
                     }
                     ui.setStatus("Rebooting to recovery...");
-                    selectedDevice.executeShell("reboot", "recovery");
+                    for (String ln : ApiCommands.runAdbShellCommand(selectedDevice, "reboot", "recovery")) {
+                        ui.println(ln);
+                        System.out.println(ln);
+                    }
                     boolean rebooted = false;
                     String deviceHash = selectedDevice.getSerial();
                     while (!rebooted) {
-                        for (String ln : Commands.runCommand("adb devices")) {
+                        for (String ln : ApiCommands.runCommand("adb devices")) {
                             if (ln.contains(deviceHash)) {
                                 rebooted = true;
                             }
@@ -190,41 +209,42 @@ public class Globals {
                     for (String rom : roms) {
                         if (rom.endsWith(".zip")) {
                             ui.setStatus("Sideloading firmware " + rom);
-                            for (String o : Commands.runCommand("adb sideload " + rom)) {
-                                System.out.println(o);
-                                ui.println(o);
+                            for (String ln : ApiCommands.runAdbCommand(selectedDevice, "sideload", rom)) {
+                                System.out.println(ln);
+                                ui.println(ln);
                             }
                             ui.setProgress(ui.getProgress() + 1);
                         }
                     }
                     if (wipeCache) {
                         ui.setStatus("Wiping cache");
-                        for (String o : Commands.runCommand("adb shell recovery --wipe_cache")) {
-                            System.out.println(o);
-                            ui.println(o);
+                        for (String ln : ApiCommands.runAdbShellCommand(selectedDevice,"recovery", "--wipe_cache")) {
+                            System.out.println(ln);
+                            ui.println(ln);
                         }
                         ui.setProgress(ui.getProgress() + 1);
                     }
                     if (wipeDalvik) {
                         ui.setStatus("Wiping Dalvik");
-                        for (String o : Commands.runCommand("adb shell rm -r /data/dalvik-cache")) {
-                            System.out.println(o);
-                            ui.println(o);
+                        for (String ln : ApiCommands.runAdbShellCommand(selectedDevice,"rm", "-r", "/data/dalvik-cache")) {
+                            System.out.println(ln);
+                            ui.println(ln);
                         }
-                        for (String o : Commands.runCommand("adb shell rm -r /cache/dalvik-cache")) {
-                            System.out.println(o);
-                            ui.println(o);
+                        for (String ln : ApiCommands.runAdbShellCommand(selectedDevice,"rm", "-r", "/cache/dalvik-cache")) {
+                            System.out.println(ln);
+                            ui.println(ln);
                         }
                         ui.setProgress(ui.getProgress() + 1);
                     }
                     ui.setStatus("Rebooting to system");
-                    for (String o : Commands.runCommand("adb reboot system")) {
-                        System.out.println(o);
-                        ui.println(o);
+                    for (String ln : ApiCommands.runCommand("adb reboot system")) {
+                        System.out.println(ln);
+                        ui.println(ln);
                     }
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, "An exception occurred while flashing.\n" +
-                            "If the problem continues please copy the console log and contact the developer.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "An exception occurred while flashing." +
+                                    "\nIf the problem continues please copy the console log and contact the developer.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     e.printStackTrace();
                     parentWindow.setWindowState(ParentWindow.WindowState.HOME);
                 }

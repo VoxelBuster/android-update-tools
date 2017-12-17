@@ -72,7 +72,7 @@ public class PackageManager {
     public void installWithOptions(File apkFile, List<? extends InstallOption> options) throws IOException, JadbException {
         List<String> optionsAsStr = new ArrayList<>(options.size());
 
-        for(InstallOption installOption : options) {
+        for (InstallOption installOption : options) {
             optionsAsStr.add(installOption.getStringRepresentation());
         }
         install(apkFile, optionsAsStr);
@@ -95,8 +95,8 @@ public class PackageManager {
 
     //<editor-fold desc="InstallOption">
     public static class InstallOption {
-        InstallOption(String ... varargs) {
-            for(String str: varargs) {
+        InstallOption(String... varargs) {
+            for (String str : varargs) {
                 stringBuilder.append(str).append(" ");
             }
         }
@@ -116,8 +116,7 @@ public class PackageManager {
     public static final InstallOption ALLOW_TEST_APK =
             new InstallOption("-t");
 
-    public static InstallOption WITH_INSTALLER_PACKAGE_NAME(String name)
-    {
+    public static InstallOption WITH_INSTALLER_PACKAGE_NAME(String name) {
         return new InstallOption("-t", name);
     }
 
